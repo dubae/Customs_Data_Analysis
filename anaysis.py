@@ -109,6 +109,7 @@ class TradeTable(QMainWindow):
         self.export_table.setRowCount(len(sorted_export_data))
         self.export_table.setColumnCount(4)
         self.export_table.setHorizontalHeaderLabels(['국가', '수출 중량(kg)', '수출 금액($)', '수출 단가($/kg)'])
+        
 
         for i, (index, row) in enumerate(sorted_export_data.iterrows()):
             self.export_table.setItem(i, 0, QTableWidgetItem(row['국가']))

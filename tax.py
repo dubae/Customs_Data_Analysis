@@ -5,7 +5,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib import rc
-from matplotlib import font_manager, rcParams
 
 # 영어 폰트 설정 (matplotlib)
 rc('font', family='Arial')

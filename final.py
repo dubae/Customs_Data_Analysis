@@ -4,6 +4,7 @@ from PyQt5.QtCore import Qt
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from CostWindow import CostWindow
 
 # 한글 폰트 설정 (윈도우의 경우)
 plt.rcParams['font.family'] = 'Malgun Gothic'
@@ -51,10 +52,14 @@ class TradeTable(QMainWindow):
         
         self.table_button = QPushButton('표', self)
         self.graph_button = QPushButton('그래프', self)
+        self.cost_button = QPushButton('운송 요금',self)
+
         self.table_button.clicked.connect(self.show_table)
         self.graph_button.clicked.connect(self.show_graph)
+        self.cost_button.clicked.connect(self.show_cost)
         
         # 버튼 레이아웃
+        self.top_layout.addWidget(self.cost_button)
         self.top_layout.addWidget(self.hscode_edit)
         self.top_layout.addWidget(self.item_name_label)  # 품목명 레이블 추가
         self.top_layout.addWidget(self.table_button)
@@ -90,6 +95,10 @@ class TradeTable(QMainWindow):
         
         # 기본적으로 테이블을 표시합니다.
         self.show_table()
+    
+    def show_cost(self):
+        self.cost_window = CostWindow(self)
+        self.cost_window.show()
         
     def hide_widgets(self):
         self.table_frame.hide()
