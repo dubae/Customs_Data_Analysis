@@ -1,7 +1,7 @@
 import pandas as pd
 
 # CSV 파일 읽기
-file_path = 'incomeoutcome.csv'
+file_path = 'incomeoutcome2.csv'
 data = pd.read_csv(file_path)
 
 # 특정 HS 코드에 대해 거래한 국가들을 정렬하는 함수
