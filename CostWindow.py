@@ -10,10 +10,9 @@ class CostWindow(QDialog):
         self.setWindowTitle('CostWindow')
         self.setGeometry(100, 100, 1000, 1000)
 
-        # 메인 레이아웃 설정
+       
         main_layout = QVBoxLayout()
 
-        # 버튼 및 기간 설정 레이아웃
         control_layout = QHBoxLayout()
         self.sea_button = QPushButton('해상 요금', self)
         self.air_button = QPushButton('항공 요금', self)
@@ -32,7 +31,6 @@ class CostWindow(QDialog):
         control_layout.addWidget(self.air_button)
         main_layout.addLayout(control_layout)
 
-        # 그래프와 텍스트 레이아웃 설정
         self.canvas1 = FigureCanvas(plt.Figure(figsize=(5, 3)))
         self.canvas2 = FigureCanvas(plt.Figure(figsize=(5, 3)))
         self.air_canvas = FigureCanvas(plt.Figure(figsize=(5, 3)))
@@ -44,26 +42,24 @@ class CostWindow(QDialog):
         main_layout.addWidget(self.label)
         self.setLayout(main_layout)
 
-        # 버튼 클릭 이벤트 연결
         self.sea_button.clicked.connect(self.display_sea_costs)
         self.air_button.clicked.connect(self.display_air_costs)
         self.start_date.dateChanged.connect(self.update_graphs)
         self.end_date.dateChanged.connect(self.update_graphs)
 
-        # 초기 화면: 해상 요금 그래프 표시
         self.display_sea_costs()
 
     def plot_graph(self, canvas, file_path, title, yLabel):
-        # CSV 파일 읽기
+       
         data = pd.read_csv(file_path, encoding='utf-8')
 
-        # 선택한 기간에 따른 데이터 필터링
+        # 기간 필터링함
         start_period = self.start_date.date().toString("yyyy-MM")
         end_period = self.end_date.date().toString("yyyy-MM")
         filtered_data = data[(data['기간'] >= start_period) & (data['기간'] <= end_period)]
 
         # 데이터 시각화
-        canvas.figure.clf()  # 이전 그래프 초기화
+        canvas.figure.clf()
         ax = canvas.figure.add_subplot(111)
         for column in filtered_data.columns[1:]:
             ax.plot(filtered_data['기간'], filtered_data[column], label=column)
@@ -72,11 +68,11 @@ class CostWindow(QDialog):
         ax.set_xlabel('기간')
         ax.set_ylabel(yLabel)
         ax.legend()
-        ax.tick_params(axis='x', rotation=90, labelsize=8)  # X축 레이블 90도 회전 및 폰트 크기 조정
+        ax.tick_params(axis='x', rotation=90, labelsize=8)  
         canvas.draw()
 
+#해상
     def display_sea_costs(self):
-        # 해상 요금 그래프 표시
         self.canvas1.show()
         self.canvas2.show()
         self.air_canvas.hide()
@@ -84,8 +80,8 @@ class CostWindow(QDialog):
         self.plot_graph(self.canvas1, "outcost_ship.csv", "해상 수출 운송비용", "비용(천 원/2TEU)")
         self.plot_graph(self.canvas2, "incost_ship.csv", "해상 수입 운송비용", "비용(천 원/2TEU)")
 
+#항공
     def display_air_costs(self):
-        # 항공 요금 그래프 표시
         self.canvas1.hide()
         self.canvas2.hide()
         self.air_canvas.show()
@@ -93,7 +89,6 @@ class CostWindow(QDialog):
         self.plot_graph(self.air_canvas, "cost_air.csv", "항공 운송비용", "비용(원/KG)")
 
     def update_graphs(self):
-        # 선택한 기간에 따라 그래프 업데이트
         if self.canvas1.isVisible():
             self.display_sea_costs()
         elif self.air_canvas.isVisible():
