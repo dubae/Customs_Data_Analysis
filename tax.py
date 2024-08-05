@@ -9,6 +9,11 @@ from matplotlib import rc
 # 영어 폰트 설정 (matplotlib)
 rc('font', family='Arial')
 
+# 한글 폰트 설정 (윈도우의 경우)
+import matplotlib.pyplot as plt
+plt.rcParams['font.family'] ='Malgun Gothic'
+plt.rcParams['axes.unicode_minus'] =False
+
 # CSV 파일 읽기
 file_path = 'incomeoutcome2.csv'
 data = pd.read_csv(file_path)

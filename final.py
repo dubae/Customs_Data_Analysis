@@ -1,9 +1,10 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QVBoxLayout, QHBoxLayout, QWidget, QLineEdit, QPushButton, QFrame
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QVBoxLayout, QHBoxLayout, QWidget, QLineEdit, QPushButton, QLabel, QFrame
 from PyQt5.QtCore import Qt
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from CostWindow import CostWindow
 
 # 한글 폰트 설정 (윈도우의 경우)
 plt.rcParams['font.family'] = 'Malgun Gothic'
@@ -45,14 +46,22 @@ class TradeTable(QMainWindow):
         # HS 코드 입력 및 버튼
         self.hscode_edit = QLineEdit(self)
         self.hscode_edit.setPlaceholderText('HS 코드 입력 (숫자만)')
+        self.hscode_edit.textChanged.connect(self.update_item_name)  # 텍스트 변경 시 업데이트
+        
+        self.item_name_label = QLabel('', self)
         
         self.table_button = QPushButton('표', self)
         self.graph_button = QPushButton('그래프', self)
+        self.cost_button = QPushButton('운송 요금',self)
+
         self.table_button.clicked.connect(self.show_table)
         self.graph_button.clicked.connect(self.show_graph)
+        self.cost_button.clicked.connect(self.show_cost)
         
         # 버튼 레이아웃
+        self.top_layout.addWidget(self.cost_button)
         self.top_layout.addWidget(self.hscode_edit)
+        self.top_layout.addWidget(self.item_name_label)  # 품목명 레이블 추가
         self.top_layout.addWidget(self.table_button)
         self.top_layout.addWidget(self.graph_button)
         
@@ -86,6 +95,10 @@ class TradeTable(QMainWindow):
         
         # 기본적으로 테이블을 표시합니다.
         self.show_table()
+    
+    def show_cost(self):
+        self.cost_window = CostWindow(self)
+        self.cost_window.show()
         
     def hide_widgets(self):
         self.table_frame.hide()
@@ -109,7 +122,6 @@ class TradeTable(QMainWindow):
         self.export_table.setRowCount(len(sorted_export_data))
         self.export_table.setColumnCount(4)
         self.export_table.setHorizontalHeaderLabels(['국가', '수출 중량(kg)', '수출 금액($)', '수출 단가($/kg)'])
-        
 
         for i, (index, row) in enumerate(sorted_export_data.iterrows()):
             self.export_table.setItem(i, 0, QTableWidgetItem(row['국가']))
@@ -141,7 +153,7 @@ class TradeTable(QMainWindow):
 
         # 그래프를 위한 Figure 설정
         self.figure_export = plt.Figure(figsize=(8, 4))  # 크기 조정
-        self.figure_import = plt.Figure(figsize=(8, 4.5))  # 크기 조정
+        self.figure_import = plt.Figure(figsize=(8, 4))  # 크기 조정
         self.canvas_export.figure = self.figure_export
         self.canvas_import.figure = self.figure_import
         
@@ -168,6 +180,18 @@ class TradeTable(QMainWindow):
         # 그래프를 레이아웃에 추가
         self.canvas_export.draw()
         self.canvas_import.draw()
+    
+    def update_item_name(self):
+        hs_code_text = self.hscode_edit.text().strip()
+        if hs_code_text.isdigit():
+            hs_code_input = int(hs_code_text)
+            item_name = data.loc[data['HS코드'] == hs_code_input, '품목명']
+            if not item_name.empty:
+                self.item_name_label.setText(f'품목명: {item_name.values[0]}')
+            else:
+                self.item_name_label.setText('해당 HS 코드의 품목명이 없습니다.')
+        else:
+            self.item_name_label.setText('HS 코드가 유효하지 않습니다.')
 
 # PyQt5 애플리케이션 초기화 및 실행
 if __name__ == '__main__':
